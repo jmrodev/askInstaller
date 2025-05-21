@@ -1,0 +1,182 @@
+ #!/bin/bash
+
+    # ESTA LÍNEA SERÁ REEMPLAZADA POR EL INSTALADOR
+    APP_INSTALL_DIR="/opt/ask"
+    # ESTA LÍNEA SERÁ REEMPLAZADA POR EL INSTALADOR
+    USER_EXECUTABLE_DIR="$HOME/.local/bin"
+    # ESTA LÍNEA SERÁ REEMPLAZADA POR EL INSTALADOR
+    PYTHON_CMD="python3"
+
+    readonly APP_INSTALL_DIR USER_EXECUTABLE_DIR PYTHON_CMD  # Protege de
+  modificaciones accidentales
+
+    # Cargar la API Key
+    GEMINI_API_KEY=""  # Inicializa con una cadena vacía
+
+    if [ -f "$APP_INSTALL_DIR/.gemini_api_key" ]; then
+      GEMINI_API_KEY=$(cat "$APP_INSTALL_DIR/.gemini_api_key" 2>/dev/null | tr -d
+  '[:space:]')
+    fi
+
+    if [ -z "$GEMINI_API_KEY" ]; then
+      echo "Error: Gemini API key no configurada. Por favor, crea un archivo con
+  la clave en '$APP_INSTALL_DIR/.gemini_api_key' o configura la variable de
+  entorno GEMINI_API_KEY." >&2
+      exit 1
+    fi
+
+    export GEMINI_API_KEY  # Exportar para que esté disponible para Python
+
+    # Verificar la existencia de 'glow'
+    if ! command -v glow &> /dev/null; then
+      GLOW_AVAILABLE=false
+      echo "glow no encontrado. Usando 'cat' para mostrar el texto sin formato."
+  >&2
+    else
+      GLOW_AVAILABLE=true
+    fi
+
+    # Comprobar la existencia de comandos esenciales
+    for cmd in "$PYTHON_CMD"; do
+      if ! command -v "$cmd" &> /dev/null; then
+        echo "Error: '$cmd' no encontrado. Asegúrate de que esté instalado y en tu
+  PATH." >&2
+        exit 1
+      fi
+    done
+
+    # Funciones auxiliares
+    ask_gemini() {
+      local prompt="$1"
+      local python_output
+      python_output=$("$PYTHON_CMD" "$APP_INSTALL_DIR/ask_gemini.py" "$prompt"
+  2>&1)
+
+      if [ $? -ne 0 ]; then
+        echo "Error: La ejecución del script de Python falló." >&2
+        echo "$python_output" >&2  # Muestra la salida de error del script de
+  Python
+        exit 1
+      fi
+
+      if $GLOW_AVAILABLE; then
+        echo "$python_output" | glow -s dark
+      else
+        echo "$python_output"
+      fi
+    }
+
+    save_text_to_file() {
+      local filename="$1"
+      local text="$2"
+
+      # Verificar si el archivo existe y si es un archivo
+      if [ -e "$filename" ] && [ ! -f "$filename" ]; then
+        echo "Error: '$filename' existe pero no es un archivo." >&2
+        return 1
+      fi
+
+      # Guardar el texto en el archivo
+      echo "$text" > "$filename"
+      return 0
+    }
+
+    append_text_to_file() {
+      local filename="$1"
+      local text="$2"
+
+      # Verificar si el archivo existe y si es un archivo
+      if [ -e "$filename" ] && [ ! -f "$filename" ]; then
+        echo "Error: '$filename' existe pero no es un archivo." >&2
+        return 1
+      fi
+
+      # Añadir el texto al archivo
+      echo "$text" >> "$filename"
+      return 0
+    }
+
+    # Comando principal
+    if [ $# -eq 0 ]; then
+      echo "Uso: ask <prompt>"
+      exit 1
+    fi
+
+    action="ask" # Valor por defecto
+
+    # Procesar argumentos
+    while [[ $# -gt 0 ]]; do
+      key="$1"
+      case "$key" in
+        --save-local)
+          action="save_local"
+          save_file=".ask_context.local"
+          shift
+          text="$1"
+          ;;
+        --append-local)
+          action="append_local"
+          append_file=".ask_context.local"
+          shift
+          text="$1"
+          ;;
+        --save-general)
+          action="save_general"
+          save_file="$APP_INSTALL_DIR/.ask_context.general"
+          shift
+          text="$1"
+          ;;
+        --append-general)
+          action="append_general"
+          append_file="$APP_INSTALL_DIR/.ask_context.general"
+          shift
+          text="$1"
+          ;;
+        *)
+          prompt="$prompt $1"
+          ;;
+      esac
+      shift
+    done
+
+    # Ejecutar la acción
+    # Solo las acciones ejecutan Python directamente.
+    case "$action" in
+        ask)
+            ask_gemini "$prompt"
+            ;;
+        save_local)
+            if save_text_to_file "$save_file" "$text"; then
+                echo "Texto guardado en '$save_file'."
+            else
+                echo "Error al guardar el texto en '$save_file'." >&2
+                exit 1
+            fi
+            ;;
+        append_local)
+            if append_text_to_file "$append_file" "$text"; then
+                echo "Texto añadido a '$append_file'."
+            else
+                echo "Error al añadir el texto a '$append_file'." >&2
+                exit 1
+            fi
+            ;;
+        save_general)
+            if save_text_to_file "$save_file" "$text"; then
+                echo "Texto guardado en '$save_file'."
+            else
+                echo "Error al guardar el texto en '$save_file'." >&2
+                exit 1
+            fi
+            ;;
+        append_general)
+            if append_text_to_file "$append_file" "$text"; then
+                echo "Texto añadido a '$append_file'."
+            else
+                echo "Error al añadir el texto a '$append_file'." >&2
+                exit 1
+            fi
+            ;;
+    esac
+
+    exit 0
