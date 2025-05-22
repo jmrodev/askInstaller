@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Find the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Execute the Python script, forwarding all arguments
+python "$SCRIPT_DIR/ask_gemini.py" "$@"
