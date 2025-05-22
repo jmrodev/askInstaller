@@ -538,7 +538,7 @@ class GeminiAPIClient:
         return response.json()
 
 # --- Response Parsing ---
-def parse_api_response(json_response):
+def parse_api_response(json_response, generation_prompt_text=None):
     """
     Parses the JSON response from the API and extracts the generated text.
 

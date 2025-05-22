@@ -1,0 +1,34 @@
+[
+  {
+    "role": "user",
+    "parts": [
+      {
+        "text": "Expl\u00edcame la computaci\u00f3n cu\u00e1ntica de forma sencilla."
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "text": "Imagina una moneda normal. Solo puede ser cara o cruz, \u00bfverdad?  Eso es como un bit en una computadora normal: 0 o 1.\n\nAhora imagina una moneda m\u00e1gica que puede ser **cara, cruz, o ambas a la vez**.  Eso es similar a un **qubit**, la unidad b\u00e1sica de informaci\u00f3n en una computadora cu\u00e1ntica.  Esta capacidad de ser m\u00faltiples estados al mismo tiempo se llama **superposici\u00f3n**.\n\nAdem\u00e1s,  estas monedas m\u00e1gicas pueden estar **enredadas**. Si tienes dos monedas m\u00e1gicas enredadas, conocer el estado de una te dice instant\u00e1neamente el estado de la otra, incluso si est\u00e1n separadas por una gran distancia.\n\nGracias a la superposici\u00f3n y el entrelazamiento, una computadora cu\u00e1ntica puede explorar muchas posibilidades **simult\u00e1neamente**.  Es como si en vez de probar una contrase\u00f1a a la vez, probara todas a la vez.  Esto le permite resolver ciertos tipos de problemas mucho m\u00e1s r\u00e1pido que una computadora cl\u00e1sica, especialmente aquellos que involucran una enorme cantidad de c\u00e1lculos.\n\n**En resumen:**\n\n* **Computadoras cl\u00e1sicas:** usan bits (0 o 1).\n* **Computadoras cu\u00e1nticas:** usan qubits (0, 1, o ambos a la vez gracias a la superposici\u00f3n).  Adem\u00e1s, pueden usar el entrelazamiento.\n* **Ventaja:**  pueden resolver ciertos problemas complejos mucho m\u00e1s r\u00e1pido que las computadoras cl\u00e1sicas.\n\nSin embargo, las computadoras cu\u00e1nticas todav\u00eda est\u00e1n en una etapa temprana de desarrollo. Son muy dif\u00edciles de construir y mantener, y solo son \u00fatiles para ciertos tipos de problemas.  No van a reemplazar a tu laptop para navegar por internet, pero podr\u00edan revolucionar campos como la medicina, la ciencia de materiales y la criptograf\u00eda."
+      }
+    ]
+  },
+  {
+    "role": "user",
+    "parts": [
+      {
+        "text": "Expl\u00edcame la computaci\u00f3n cu\u00e1ntica de forma sencilla."
+      }
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      {
+        "text": "Imagina buscar una aguja en un pajar.  Una computadora normal revisa cada paja una por una.  Una computadora cu\u00e1ntica, sin embargo, puede mirar **todas las pajas a la vez**.  Eso es gracias a la **superposici\u00f3n**, la habilidad de estar en m\u00faltiples estados simult\u00e1neamente.\n\nEs como si tuviera una copia m\u00e1gica del pajar, y pudiera revisar todas las versiones a la vez para ver si la aguja est\u00e1 presente en alguna de ellas.  Una vez encontrada, la computadora cu\u00e1ntica \"colapsa\" a la soluci\u00f3n correcta.\n\nEsa magia viene de la f\u00edsica cu\u00e1ntica.  No es solo \"m\u00e1s r\u00e1pido\", es un tipo de computaci\u00f3n fundamentalmente diferente.  Todav\u00eda no est\u00e1 lista para reemplazar tu tel\u00e9fono, pero tiene el potencial de revolucionar campos como la medicina (dise\u00f1ando nuevas drogas), la ciencia de materiales (creando nuevos materiales), y la inteligencia artificial (resolviendo problemas incre\u00edblemente complejos).  Pero es muy dif\u00edcil de construir y mantener.\n\nEn resumen:  **paralelismo masivo** gracias a la superposici\u00f3n.  Eso permite resolver problemas actualmente irresolubles para las computadoras cl\u00e1sicas."
+      }
+    ]
+  }
+]
