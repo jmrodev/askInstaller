@@ -2,19 +2,25 @@ import os
 import argparse
 import requests
 import json
+import base64
 
 # Constantes
 MAX_HISTORY_TURNS = 5
-    # GOOGLE_AI_API_URL will be constructed in call_gemini_api based on the model
 API_KEY_ENV_VAR = "GEMINI_API_KEY"
-    DEFAULT_GENERAL_CONTEXT_FILE = ".ask_context.general"  # Not actively used, but kept for context from original script
+DEFAULT_GENERAL_CONTEXT_FILE = ".ask_context.general"  # Not actively used, but kept for context from original script
+SUPPORTED_TEXT_MODELS = [
+    "gemini-pro", "gemini-1.0-pro", "gemini-1.5-pro-latest", "gemini-2.0-pro", "gemini-2.0-flash"
+]
+SUPPORTED_MULTIMODAL_MODELS = [
+    "gemini-pro-vision", "gemini-1.5-pro-latest"
+]
 
 class APIError(Exception):
-        """Custom exception for API-related errors encountered in this script."""
+    """Custom exception for API-related errors encountered in this script."""
     pass
 
 def load_api_key():
-        """Loads the Gemini API key from the environment variable GEMINI_API_KEY."""
+    """Loads the Gemini API key from the environment variable GEMINI_API_KEY."""
     api_key = os.environ.get(API_KEY_ENV_VAR)
     if not api_key:
         print("Error: The GEMINI_API_KEY environment variable is not set. "
@@ -23,7 +29,12 @@ def load_api_key():
         exit(1)
     return api_key
 
-def construct_payload(prompt, history, temperature, max_output_tokens, top_p, top_k):
+def encode_image_to_base64(image_path):
+    """Encodes an image file to a base64 string."""
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode("utf-8")
+
+def construct_payload(prompt, history, temperature, max_output_tokens, top_p, top_k, image_path=None, model_name="gemini-pro"):
     """
     Constructs the JSON payload for the Gemini API call.
 
@@ -34,6 +45,8 @@ def construct_payload(prompt, history, temperature, max_output_tokens, top_p, to
         max_output_tokens (int): Maximum number of tokens to generate.
         top_p (float): Nucleus sampling parameter.
         top_k (int): Top-k sampling parameter.
+        image_path (str): Path to an image file (optional).
+        model_name (str): The name of the Gemini model to use.
 
     Returns:
         str: A JSON string representing the payload.
@@ -43,8 +56,24 @@ def construct_payload(prompt, history, temperature, max_output_tokens, top_p, to
     for item in history:
         conversation_history.append({"role": item["role"], "parts": [{"text": item["content"]}]})
 
+    # Multimodal payload if image_path is provided and model supports it
+    if image_path and model_name in SUPPORTED_MULTIMODAL_MODELS:
+        image_b64 = encode_image_to_base64(image_path)
+        parts = [
+            {"text": prompt},
+            {
+                "inline_data": {
+                    "mime_type": "image/jpeg",
+                    "data": image_b64
+                }
+            }
+        ]
+        user_content = {"role": "user", "parts": parts}
+    else:
+        user_content = {"role": "user", "parts": [{"text": prompt}]}
+
     payload = {
-        "contents": conversation_history + [{"role": "user", "parts": [{"text": prompt}]}],
+        "contents": conversation_history + [user_content],
         "generationConfig": {
             "temperature": temperature,
             "topP": top_p,
@@ -146,40 +175,59 @@ def parse_response(json_response):
         raise APIError(f"Error parsing the API response: {e}. Malformed response structure. Response: {json.dumps(json_response)}")
 
 def main():
-    """Main function to parse arguments, construct payload, call API, and print response.""" # Updated docstring
-    parser = argparse.ArgumentParser(description="A command-line tool to interact with the Google Gemini API.")
-    parser.add_argument("prompt", nargs="+", help="The text prompt to send to the API.")
-    parser.add_argument("--model", type=str, default="gemini-pro", help="The model to use (e.g., 'gemini-pro', 'gemini-pro-vision'). Default: gemini-pro.")
+    """Main function to parse arguments, construct payload, call API, and print response."""
+    parser = argparse.ArgumentParser(description="Interact with Google Gemini API (text and vision models).")
+    parser.add_argument("prompt", nargs="+", help="Prompt to send to the API.")
+    parser.add_argument("--model", type=str, default="gemini-2.0-flash", help="Model to use (see --list-models).")
     parser.add_argument("--temperature", type=float, default=0.9, help="Controls randomness. Lower values are more deterministic. Default: 0.9.")
     parser.add_argument("--max-output-tokens", type=int, default=2048, help="Maximum number of tokens to generate. Default: 2048.")
     parser.add_argument("--top-p", type=float, default=1.0, help="Nucleus sampling parameter. Default: 1.0.")
     parser.add_argument("--top-k", type=int, default=1, help="Top-k sampling parameter. Default: 1.")
-        parser.add_argument("--file-path", type=str, help="Path to a text file whose content will be prepended to the prompt.") # New file-path argument
+    parser.add_argument("--file-path", type=str, help="Prepend file content to prompt.")
+    parser.add_argument("--image-path", type=str, help="Path to an image (JPEG) for multimodal models.")
+    parser.add_argument("--list-models", action="store_true", help="List supported models and exit.")
     args = parser.parse_args()
+
+    if args.list_models:
+        print("Modelos solo texto:")
+        for m in SUPPORTED_TEXT_MODELS:
+            print(f"  {m}")
+        print("\nModelos texto + imagen:")
+        for m in SUPPORTED_MULTIMODAL_MODELS:
+            print(f"  {m}")
+        exit(0)
 
     try:
         api_key = load_api_key()
-            prompt_text = " ".join(args.prompt) 
-            
-            # Handle file content if --file-path is provided
-            if args.file_path:
-                try:
-                    # Ensure UTF-8 encoding for broader compatibility
-                    with open(args.file_path, 'r', encoding='utf-8') as f:
-                        file_content = f.read()
-                    # Prepend file content to the main prompt
-                    prompt_text = f"Content from file '{args.file_path}':\n{file_content}\n\n---\n\nUser Prompt:\n{prompt_text}"
-                except FileNotFoundError:
-                    print(f"Error: File not found at path: {args.file_path}")
-                    exit(1)
-                except Exception as e: # Catch other potential file reading errors
-                    print(f"Error reading file {args.file_path}: {e}")
-                    exit(1)
-            
-            current_history = [] 
+        prompt_text = " ".join(args.prompt) 
+        
+        # Handle file content if --file-path is provided
+        if args.file_path:
+            try:
+                # Ensure UTF-8 encoding for broader compatibility
+                with open(args.file_path, 'r', encoding='utf-8') as f:
+                    file_content = f.read()
+                # Prepend file content to the main prompt
+                prompt_text = f"Content from file '{args.file_path}':\n{file_content}\n\n---\n\nUser Prompt:\n{prompt_text}"
+            except FileNotFoundError:
+                print(f"Error: File not found at path: {args.file_path}")
+                exit(1)
+            except Exception as e: # Catch other potential file reading errors
+                print(f"Error reading file {args.file_path}: {e}")
+                exit(1)
+        
+        current_history = [] 
 
-            payload = construct_payload(prompt_text, current_history, args.temperature, args.max_output_tokens, args.top_p, args.top_k) 
-            json_response = call_gemini_api(payload, api_key, args.model) 
+        # Warn if image is provided but model does not support it
+        if args.image_path and args.model not in SUPPORTED_MULTIMODAL_MODELS:
+            print(f"Warning: Model '{args.model}' does not support images. Ignoring --image-path.")
+            args.image_path = None
+
+        payload = construct_payload(
+            prompt_text, current_history, args.temperature, args.max_output_tokens, args.top_p, args.top_k,
+            image_path=args.image_path, model_name=args.model
+        )
+        json_response = call_gemini_api(payload, api_key, args.model) 
         response_text = parse_response(json_response)
 
         print(response_text)
@@ -188,7 +236,7 @@ def main():
         print(f"Error: {e}") 
         exit(1)
     except Exception as e:
-        print(f"An unexpected error occurred: {e}") # Updated error message
+        print(f"An unexpected error occurred: {e}")
         exit(1)
 
 if __name__ == "__main__":
