@@ -17,6 +17,20 @@ import google.generativeai as genai
 import google.ai.generativelanguage as glm
 from PIL import Image
 
+# --- Start of new code for robust imports ---
+# Get the directory where ask_gemini.py itself is located.
+# This is important if ask_gemini.py is called via a symlink
+# or if the 'ask' wrapper script changes the working directory.
+# __file__ is the path to the current script.
+script_own_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Add this directory to sys.path if it's not already there.
+# This allows importing helper modules (pdf_processor, etc.) 
+# assumed to be in the same directory as ask_gemini.py.
+if script_own_directory not in sys.path:
+    sys.path.insert(0, script_own_directory)
+# --- End of new code for robust imports ---
+
 # Attempt to import project-specific modules for PDF audio summary
 try:
     from pdf_processor import extract_text_from_pdf, PDFProcessingError
@@ -405,7 +419,7 @@ def main():
     # --- New PDF Audio Summary Mode ---
     if args.pdf_audio_summary: # This condition checks if the flag was used
         if not PDF_AUDIO_MODULES_AVAILABLE:
-            print("Error: PDF summarization helper modules (pdf_processor.py, text_summarizer.py, audio_generator.py) not found in the same directory.", file=sys.stderr)
+            print("Error: PDF summarization helper modules (pdf_processor.py, text_summarizer.py, audio_generator.py) not found. Please ensure they are in the same directory as ask_gemini.py or in the Python path.", file=sys.stderr)
             sys.exit(1)
 
         print("PDF Audio Summary Mode Activated:")

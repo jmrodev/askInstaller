@@ -38,12 +38,26 @@
         ```
 
 4.  **Place in PATH (Recommended)**:
-    *   For convenient use from any directory, place the `ask` script and the `ask_gemini.py` Python script (they must be in the same directory) into a directory that is included in your system's `PATH` environment variable (e.g., `/usr/local/bin` or `~/bin`).
-    *   Example:
-        ```bash
-        sudo cp ask ask_gemini.py /usr/local/bin/
-        ```
-        (Adjust the destination path as needed for your system.)
+    *   For convenient use from any directory, the `ask` script, the `ask_gemini.py` Python script, and its helper modules (`pdf_processor.py`, `text_summarizer.py`, `audio_generator.py`) must all be placed together in the same directory.
+    *   This directory can then be added to your system's `PATH` environment variable, or the main `ask` script can be symlinked from a directory already in your `PATH`.
+    *   **Example (copying all relevant files to a dedicated lib directory and symlinking `ask`):**
+        1.  Create a directory for the application files (e.g., in `/usr/local/lib`):
+            ```bash
+            sudo mkdir -p /usr/local/lib/ask-gemini
+            ```
+        2.  Copy all the Python scripts (`ask_gemini.py`, `pdf_processor.py`, `text_summarizer.py`, `audio_generator.py`) and the `ask` bash script into this new directory:
+            ```bash
+            sudo cp ask ask_gemini.py pdf_processor.py text_summarizer.py audio_generator.py /usr/local/lib/ask-gemini/
+            ```
+        3.  Ensure the `ask` script in this new location is executable:
+            ```bash
+            sudo chmod +x /usr/local/lib/ask-gemini/ask
+            ```
+        4.  Create a symbolic link to the `ask` script from a standard PATH directory (like `/usr/local/bin`):
+            ```bash
+            sudo ln -s /usr/local/lib/ask-gemini/ask /usr/local/bin/ask
+            ```
+        (Adjust paths as needed for your system and preference. The key is that `ask_gemini.py` and its helper Python modules must reside in the same directory from which `ask_gemini.py` is executed by the `ask` wrapper.)
 
 ## Usage
 
