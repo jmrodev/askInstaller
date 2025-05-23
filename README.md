@@ -16,6 +16,7 @@
 *   **Model Selection**: Choose from various supported Gemini models for different tasks.
 *   **Parameter Control**: Adjust generation parameters like temperature, max output tokens, etc.
 *   **Easy Management**: Clear history and context files with simple commands.
+*   **PDF Audio Summarization**: Generate an audio summary from a PDF file, with options for language and summary length.
 
 ## Setup
 
@@ -69,6 +70,11 @@ Here are some common examples of how to use `ask-gemini`:
     ```
     (Note: Generated images are saved locally, e.g., `generated_A_futuristic_city_YYYYMMDD_HHMMSS.png`)
 
+*   **Generate an audio summary from a PDF**:
+    ```bash
+    ask --pdf-audio-summary my_document.pdf --output-audio summary.mp3 --audio-lang en --details-prompt "focus on conclusions"
+    ```
+
 *   **Interactive chat mode**:
     ```bash
     ask --chat
@@ -121,6 +127,12 @@ Here are some of the important command-line flags:
 *   `--clear-local-history`: Clear the `.ask_history.json` file.
 *   `--clear-local-context`: Clear the `.ask_context.local` file.
 *   `--clear-general-context`: Clear the `~/.ask_context.general` file.
+*   `--pdf-audio-summary <PDF_FILE_PATH>`: Generate an audio summary from the specified PDF file. This mode typically ignores other primary input modes.
+*   `--details-prompt <TEXT>`: Optional. Provide specific instructions for the PDF audio summarization process (e.g., "focus on financial aspects").
+*   `--output-audio <OUTPUT_MP3_PATH>`: Optional. Path for the generated audio summary file. Defaults to `<pdf_filename>_summary.mp3`.
+*   `--audio-lang <LANGUAGE_CODE>`: Optional. Language for the audio summary (default: 'es').
+*   `--min-sum-ratio <FLOAT>`: Optional. Minimum summary length as a ratio of original PDF text (default: 0.1).
+*   `--max-sum-ratio <FLOAT>`: Optional. Maximum summary length as a ratio of original PDF text (default: 0.3).
 
 For a full and detailed list of all options and their descriptions, run:
 ```bash
