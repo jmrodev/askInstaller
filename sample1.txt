@@ -1,3 +1,0 @@
-This is the first sample document.
-It contains some general information that needs to be summarized.
-Gemini is a family of multimodal models.

@@ -1,3 +1,0 @@
-This is the second sample document.
-It provides further details and context.
-The latest model is Gemini 1.5 Pro.

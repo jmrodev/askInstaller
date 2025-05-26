@@ -1,5 +1,0 @@
-This is a placeholder for a JPEG image.
-In a real test, this file would contain actual JPEG data.
-If the script works, it will encode this text as base64.
-The API call would likely fail or return a nonsensical result with this content,
-but the script's image handling logic (encoding, payload construction) can still be conceptually verified.
