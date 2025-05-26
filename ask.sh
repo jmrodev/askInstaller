@@ -259,7 +259,19 @@ if "$INTERACTIVE_CHAT"; then
         # Pero esto haría que el contexto se repita si ya está en el historial.
 
         # Enfoque: tomar el historial del SDK, añadir el prompt actual.
-        contents_for_api_json=$(echo "$sdk_history_for_api" | jq ". + [$current_user_part_json]")
+        # contents_for_api_json=$(echo "$sdk_history_for_api" | jq ". + [$current_user_part_json]")
+        contents_for_api_json=$(jq -n \
+          --argjson sdk_hist "$sdk_history_for_api" \
+          --argjson current_user_prompt "$current_user_part_json" \
+          --arg context_str "$context_str" \
+          '
+            if $context_str == "" or $context_str == null then
+              $sdk_hist + [$current_user_prompt]
+            else
+              # Context part, then SDK history, then current user prompt
+              [{role: "user", parts: [{text: $context_str}]}] + $sdk_hist + [$current_user_prompt]
+            end
+          ')
         
         # Construir el cuerpo completo de la solicitud
         request_body=$(jq -n --argjson contents "$contents_for_api_json" '{contents: $contents}')

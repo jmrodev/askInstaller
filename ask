@@ -4,4 +4,4 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Execute the Python script, forwarding all arguments
-python "$SCRIPT_DIR/ask_gemini.py" "$@"
+"$SCRIPT_DIR/ask.sh" "$@"
