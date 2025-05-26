@@ -1,0 +1,44 @@
+[
+  {
+    "timestamp": "2025-05-26T16:54:10.260922",
+    "model": "gemini-1.5-flash-latest",
+    "prompt": "hola",
+    "response": "Hola! \u00bfC\u00f3mo est\u00e1s?\n"
+  },
+  {
+    "timestamp": "2025-05-26T16:58:35.482112",
+    "model": "gemini-1.5-flash-latest",
+    "prompt": "hola",
+    "response": "Hola! \u00bfC\u00f3mo est\u00e1s hoy?\n"
+  },
+  {
+    "timestamp": "2025-05-26T16:58:51.635892",
+    "model": "gemini-1.5-flash-latest",
+    "prompt": "bien y vos",
+    "response": "\u00a1Bien, gracias!  \u00bfEn qu\u00e9 te puedo ayudar hoy?\n"
+  },
+  {
+    "timestamp": "2025-05-26T16:59:05.460401",
+    "model": "gemini-1.5-flash-latest",
+    "prompt": "tabla del 2",
+    "response": "```\n2 x 1 = 2\n2 x 2 = 4\n2 x 3 = 6\n2 x 4 = 8\n2 x 5 = 10\n2 x 6 = 12\n2 x 7 = 14\n2 x 8 = 16\n2 x 9 = 18\n2 x 10 = 20\n```\n"
+  },
+  {
+    "timestamp": "2025-05-26T16:59:20.350054",
+    "model": "gemini-1.5-flash-latest",
+    "prompt": "cual es primo",
+    "response": "Un n\u00famero primo es un n\u00famero natural mayor que 1 que solo tiene dos divisores positivos distintos: 1 y \u00e9l mismo.  Por ejemplo, 2, 3, 5, 7, 11 son n\u00fameros primos.\n"
+  },
+  {
+    "timestamp": "2025-05-26T16:59:31.985498",
+    "model": "gemini-1.5-flash-latest",
+    "prompt": "cual es primo de la tabla",
+    "response": "De la tabla del 2, el \u00fanico n\u00famero primo es el **2** mismo.\n"
+  },
+  {
+    "timestamp": "2025-05-26T17:00:08.620024",
+    "model": "gemini-1.5-flash-latest",
+    "prompt": "divide por tres cada resultado de la tabla",
+    "response": "```\n2 / 3 = 0.666...\n4 / 3 = 1.333...\n6 / 3 = 2\n8 / 3 = 2.666...\n10 / 3 = 3.333...\n12 / 3 = 4\n14 / 3 = 4.666...\n16 / 3 = 5.333...\n18 / 3 = 6\n20 / 3 = 6.666...\n```\n"
+  }
+]
