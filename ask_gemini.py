@@ -101,13 +101,13 @@ def prompt_mode(model, prompt):
     if history:
         full_prompt += f"[Historial]\n{history}\n"
     full_prompt += prompt
-    response = model.generate_content(full_prompt, stream=True)
+    # Cambia stream=True por stream=False
+    response = model.generate_content(full_prompt, stream=False)
     response_text = ""
-    for chunk in response:
-        for part in chunk.parts:
-            if hasattr(part, 'text'):
-                print(part.text, end="", flush=True)
-                response_text += part.text
+    # El resultado ya no es un stream, sino un objeto
+    if hasattr(response, 'text'):
+        print(response.text, end="", flush=True)
+        response_text += response.text
     print()
     save_history(prompt, response_text, model._model_name)
 
